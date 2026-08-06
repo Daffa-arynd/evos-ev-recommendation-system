@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL Database ──────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: evos_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evos_user
+      POSTGRES_PASSWORD: evos_pass
+      POSTGRES_DB: evos_db
+    volumes:
+      - evos_pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evos_user -d evos_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── FastAPI Backend ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: evos_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://evos_user:evos_pass@postgres:5432/evos_db
+      DATASET_PATH: /app/data/electric_vehicles_dataset.csv
+      ML_MODEL_PATH: /app/models/evos_pipeline.pkl
+      DEBUG: "false"
+    volumes:
+      - ./data:/app/data:ro
+      - evos_models:/app/models
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ─── React Frontend (Nginx) ───────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: evos_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    environment:
+      VITE_API_URL: http://localhost:8000
+
+volumes:
+  evos_pgdata:
+  evos_models:
+
+networks:
+  default:
+    name: evos_network

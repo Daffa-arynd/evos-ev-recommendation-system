@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "EVOS API Tests",
+    "description": "Electric Vehicle Oracle System — Full API Test Suite",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:8000" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/health"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('ML engine ready', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.status).to.eql('healthy');",
+            "  pm.expect(json.ml_engine).to.eql('ready');",
+            "});"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "GET /vehicles (all, page 1)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{BASE_URL}}/vehicles?page=1&page_size=20",
+          "query": [
+            {"key": "page",      "value": "1"},
+            {"key": "page_size", "value": "20"}
+          ]
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Pagination correct', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j.vehicles.length).to.be.at.most(20);",
+            "  pm.expect(j.total).to.be.above(0);",
+            "});"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "GET /vehicles (filter: budget EVs under $50k)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{BASE_URL}}/vehicles?max_price=50000&sort_by=price_usd&sort_dir=asc",
+          "query": [
+            {"key": "max_price", "value": "50000"},
+            {"key": "sort_by",   "value": "price_usd"},
+            {"key": "sort_dir",  "value": "asc"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /vehicles/:id",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/vehicles/1"
+      }
+    },
+    {
+      "name": "POST /recommend — Performance Profile",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{BASE_URL}}/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"max_price_usd\": 95000,\n  \"min_range_km\": 350,\n  \"min_battery_kwh\": 80,\n  \"max_charge_time_hr\": 6,\n  \"min_safety_rating\": 4,\n  \"min_autonomy_level\": 3,\n  \"cluster_profile\": \"performance\",\n  \"top_k\": 5,\n  \"weights\": {\n    \"price\": 1.0,\n    \"range_km\": 1.5,\n    \"battery\": 1.0,\n    \"charge_time\": 1.0,\n    \"safety\": 1.0,\n    \"autonomy\": 1.5\n  }\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns 5 recommendations', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j.recommendations).to.have.lengthOf(5);",
+            "});",
+            "pm.test('Each recommendation has explainability', () => {",
+            "  const j = pm.response.json();",
+            "  j.recommendations.forEach(r => {",
+            "    pm.expect(r.similarity_score).to.be.above(0);",
+            "    pm.expect(r.explanation).to.be.a('string');",
+            "    pm.expect(r.explainability).to.be.an('array').with.length.above(0);",
+            "  });",
+            "});"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "POST /recommend — Budget Profile",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{BASE_URL}}/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"max_price_usd\": 50000,\n  \"min_range_km\": 250,\n  \"min_battery_kwh\": 50,\n  \"max_charge_time_hr\": 9,\n  \"min_safety_rating\": 3,\n  \"min_autonomy_level\": 1,\n  \"cluster_profile\": \"budget\",\n  \"top_k\": 5,\n  \"weights\": {\n    \"price\": 2.0,\n    \"range_km\": 1.0,\n    \"battery\": 0.5,\n    \"charge_time\": 0.5,\n    \"safety\": 1.0,\n    \"autonomy\": 0.5\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /recommend — Long Range Profile",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{BASE_URL}}/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"max_price_usd\": 85000,\n  \"min_range_km\": 470,\n  \"min_battery_kwh\": 100,\n  \"max_charge_time_hr\": 5,\n  \"min_safety_rating\": 4,\n  \"min_autonomy_level\": 2,\n  \"cluster_profile\": \"longrange\",\n  \"top_k\": 5,\n  \"weights\": {\n    \"price\": 1.0,\n    \"range_km\": 2.0,\n    \"battery\": 1.5,\n    \"charge_time\": 1.5,\n    \"safety\": 1.0,\n    \"autonomy\": 1.0\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /clusters",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/clusters"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns 3 clusters', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j.total_clusters).to.eql(3);",
+            "  pm.expect(j.clusters).to.have.lengthOf(3);",
+            "});"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "POST /recommend/feedback",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{BASE_URL}}/recommend/feedback",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_token\": \"test-session-abc123\",\n  \"vehicle_id\": 10,\n  \"rank\": 1,\n  \"was_helpful\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /recommend — Validation Error (invalid price)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{BASE_URL}}/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"max_price_usd\": -1000,\n  \"min_range_km\": 300,\n  \"min_battery_kwh\": 60,\n  \"max_charge_time_hr\": 6,\n  \"min_safety_rating\": 4,\n  \"min_autonomy_level\": 2\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Should return 422 Unprocessable Entity', () => pm.response.to.have.status(422));"
+          ]
+        }
+      }]
+    }
+  ]
+}
