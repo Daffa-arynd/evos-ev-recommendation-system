@@ -70,19 +70,19 @@ EVOS combines **K-Means clustering** (to group vehicles into buyer-oriented prof
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     EVOS System Architecture                 │
+│                     EVOS System Architecture                │
 ├──────────────┬─────────────────────────┬────────────────────┤
-│   FRONTEND   │       BACKEND API        │     DATABASE       │
-│              │                          │                    │
-│  React.js    │  FastAPI (Python 3.11)   │  PostgreSQL 16     │
-│  TailwindCSS │  ┌───────────────────┐   │  ┌──────────────┐ │
-│  GSAP        │  │  ML Pipeline      │   │  │ ev_vehicles  │ │
-│  Particles   │  │  ├ MinMaxScaler   │   │  │ user_sessions│ │
-│              │  │  ├ K-Means (k=3)  │   │  │ rec_logs     │ │
-│  ─────────   │  │  ├ CosineSim      │   │  │ cluster_prof │ │
-│  POST /rec   │  │  └ Explainability │   │  └──────────────┘ │
-│  GET /evs    │  └───────────────────┘   │                    │
-│  GET /clust  │                          │                    │
+│   FRONTEND   │       BACKEND API       │     DATABASE       │
+│              │                         │                    │
+│  React.js    │  FastAPI (Python 3.11)  │  PostgreSQL 16     │
+│  TailwindCSS │  ┌───────────────────┐  │  ┌──────────────┐  │
+│  GSAP        │  │  ML Pipeline      │  │  │ ev_vehicles  │  │
+│  Particles   │  │  ├ MinMaxScaler      │  │ user_sessions│  │
+│              │  │  ├ K-Means (k=3)  │  │  │ rec_logs     │  │
+│  ─────────   │  │  ├ CosineSim      │  │  │ cluster_prof │  │
+│  POST /rec   │  │  └ Explainability │  │  └──────────────┘  │
+│  GET /evs    │  └───────────────────┘  │                    │
+│  GET /clust  │                         │                    │
 └──────────────┴─────────────────────────┴────────────────────┘
 ```
 
