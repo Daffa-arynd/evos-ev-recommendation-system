@@ -5,6 +5,48 @@
 
 ---
 
+## 📌 Overview
+
+EVOS (Electric Vehicle Oracle System) is a full-stack web application that
+helps users choose an electric vehicle based on their own priorities, using
+a content-based recommendation engine backed by real vehicle data and
+explainable AI.
+
+## ❗ Problem
+
+Choosing an EV means weighing trade-offs across price, range, battery
+capacity, charging time, and safety — across a market with hundreds of
+models. Most comparison tools let you filter by spec, but they don't explain
+*why* a vehicle actually fits your needs, and they don't account for how
+different buyer priorities (budget-focused vs. performance-focused vs.
+range-focused) change what "best fit" even means.
+
+## 💡 Solution
+
+EVOS combines **K-Means clustering** (to group vehicles into buyer-oriented
+profiles) with **content-based filtering via cosine similarity** (to rank
+vehicles against a user's specific preferences). Every recommendation is
+paired with an **Explainable AI breakdown** showing exactly which features
+drove the match, instead of a black-box score.
+
+## ✨ Features
+
+- Preference-based recommendation form (price, range, battery, charge time, safety, autonomy)
+- K-Means clustering into 3 buyer profiles: **Budget**, **Performance**, **Long Range**
+- Content-based filtering using cosine similarity across 6 weighted features
+- Explainable AI panel — per-feature contribution score and match quality (excellent/good/partial/weak) for every recommendation
+- Full REST API (FastAPI) with interactive Swagger docs at `/docs`
+- Dockerized full-stack deployment (PostgreSQL + FastAPI + React/Nginx)
+
+## 📊 Dataset
+
+- **3,022** electric vehicle records
+- **53** manufacturers
+- **40** production countries
+- Model years **2015–2025**
+- 6 core features used for recommendation: price, range, battery capacity, charge time, safety rating, autonomy level
+
+---
 ## 🏗️ Architecture Overview
 
 ```
