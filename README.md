@@ -1,42 +1,45 @@
-# ⚡ EVOS — Electric Vehicle Oracle System
+<div align="center">
 
-> **AI-powered EV recommendation system** built with FastAPI, React, PostgreSQL, and scikit-learn.
-> Content-Based Filtering + K-Means Clustering + Cosine Similarity + Explainable AI.
+# ⚡ EVOS
+### Electric Vehicle Oracle System
+
+*AI-powered EV recommendations that explain themselves — content-based filtering, K-Means clustering, and explainable AI over 3,022 real vehicle records.*
+
+![Python](https://img.shields.io/badge/python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
+
+</div>
 
 ---
 
 ## 📌 Overview
 
-EVOS (Electric Vehicle Oracle System) is a full-stack web application that
-helps users choose an electric vehicle based on their own priorities, using
-a content-based recommendation engine backed by real vehicle data and
-explainable AI.
+EVOS is a full-stack web application that helps users choose an electric vehicle based on their own priorities — not a generic spec filter, but a recommendation engine that ranks vehicles against what *you* actually care about, and explains exactly why each result was picked.
 
 ## ❗ Problem
 
-Choosing an EV means weighing trade-offs across price, range, battery
-capacity, charging time, and safety — across a market with hundreds of
-models. Most comparison tools let you filter by spec, but they don't explain
-*why* a vehicle actually fits your needs, and they don't account for how
-different buyer priorities (budget-focused vs. performance-focused vs.
-range-focused) change what "best fit" even means.
+Choosing an EV means weighing trade-offs across price, range, battery capacity, charging time, and safety — across a market with hundreds of models. Most comparison tools let you filter by spec, but they don't explain *why* a vehicle actually fits your needs, and they don't account for how different buyer priorities (budget-focused vs. performance-focused vs. range-focused) change what "best fit" even means.
 
 ## 💡 Solution
 
-EVOS combines **K-Means clustering** (to group vehicles into buyer-oriented
-profiles) with **content-based filtering via cosine similarity** (to rank
-vehicles against a user's specific preferences). Every recommendation is
-paired with an **Explainable AI breakdown** showing exactly which features
-drove the match, instead of a black-box score.
+EVOS combines **K-Means clustering** (to group vehicles into buyer-oriented profiles) with **content-based filtering via cosine similarity** (to rank vehicles against a user's specific preferences). Every recommendation is paired with an **Explainable AI breakdown** showing exactly which features drove the match, instead of a black-box score.
 
-## ✨ Features
+## ✨ Key Features
 
-- Preference-based recommendation form (price, range, battery, charge time, safety, autonomy)
-- K-Means clustering into 3 buyer profiles: **Budget**, **Performance**, **Long Range**
-- Content-based filtering using cosine similarity across 6 weighted features
-- Explainable AI panel — per-feature contribution score and match quality (excellent/good/partial/weak) for every recommendation
-- Full REST API (FastAPI) with interactive Swagger docs at `/docs`
-- Dockerized full-stack deployment (PostgreSQL + FastAPI + React/Nginx)
+| | |
+|---|---|
+| 🎯 **Preference-based matching** | Set your own budget, range, battery, charge time, safety, and autonomy priorities via weighted sliders |
+| 🧭 **3 buyer profiles** | K-Means clustering into **Budget**, **Performance**, and **Long Range** segments |
+| 🔍 **Explainable AI** | Every recommendation shows a per-feature contribution score and match quality (excellent/good/partial/weak) — not just a similarity number |
+| ⚖️ **Side-by-side comparison** | Compare up to 3 vehicles at once, with the best value per spec highlighted automatically |
+| ❤️ **Save & bookmark** | Save vehicles to revisit and compare later |
+| 📡 **Full REST API** | FastAPI backend with interactive Swagger docs at `/docs` |
+| 🐳 **One-command deploy** | Fully Dockerized — PostgreSQL + FastAPI + React/Nginx via Docker Compose |
 
 ## 📊 Dataset
 
@@ -46,7 +49,23 @@ drove the match, instead of a black-box score.
 - Model years **2015–2025**
 - 6 core features used for recommendation: price, range, battery capacity, charge time, safety rating, autonomy level
 
----
+## 📸 Screenshots
+
+**Homepage**
+![Homepage](zhomepage.png)
+
+**Preference Form** — weighted sliders drive the recommendation engine
+![Preference Form](zpreference-form.png)
+
+**Recommendations — Explainable AI radar + feature breakdown**
+![Recommendations](zrecommendation.png)
+
+**Side-by-Side EV Comparison** — best value per spec auto-highlighted
+![Comparison](zcompared.png)
+
+**Saved Vehicles**
+![Saved](zsaved.png)
+
 ## 🏗️ Architecture Overview
 
 ```
